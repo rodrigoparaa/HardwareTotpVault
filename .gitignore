@@ -1,0 +1,20 @@
+# macOS metadata
+.DS_Store
+._*
+
+# Intermediate PSP & Host build artifacts
+*.o
+*.elf
+*.prx
+PARAM.SFO
+tests/test_core
+tools/vault_cli
+*.tmp
+
+# Private key files (keep synthetic mis_claves.txt template tracked, ignore custom secret files)
+*secret*.txt
+*private*.txt
+*real*.txt
+claves_reales.txt
+my_keys.txt
+

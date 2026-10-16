@@ -1,0 +1,113 @@
+# ===============================================================
+# EXAMPLE VAULT CONFIGURATION — 04_HardwareTotp_Vault
+# ===============================================================
+# WARNING: This is a public template with synthetic RFC test vectors.
+# Do NOT commit your real keys or secrets to version control (Git).
+#
+# To pack and encrypt into vault.enc:
+#   ./tools/vault_cli pack mis_claves.txt vault.enc
+#
+# To inspect the encrypted vault on your host machine:
+#   ./tools/vault_cli inspect vault.enc
+# ===============================================================
+
+[config]
+# Manual RTC drift compensation in seconds (+ / -)
+time_drift_sec = 0
+
+# Inactivity auto-lock timeout in minutes: 0 (disabled), 2, 5, or 10
+auto_lock_minutes = 5
+
+# Default color palette:
+#   0 = Dark Cyberpunk (Deep Navy & Cyan)
+#   1 = Stealth Red    (Tactical Black & Crimson)
+#   2 = OLED Gold      (Pure Black & Amber Gold)
+default_theme = 0
+
+# Hardware PIN sequence length: 2, 4, or 8 button presses
+pin_length = 4
+
+# Physical button combination required to decrypt vault in RAM:
+# Valid tokens:
+#   L, R, UP, DOWN, LEFT, RIGHT, CROSS, CIRCLE, SQUARE, TRIANGLE
+#   (Aliases: U, D, L, R, X, O, [], /\)
+#
+# TIP: Using only 'L' and 'R' (e.g., L, R, L, R) allows unlocking
+# the PSP Go in desk dock mode with the display slider closed.
+pin_sequence = L, R, L, R
+
+
+# ===============================================================
+# 2FA OTP ACCOUNTS (TOTP RFC 6238 / HOTP RFC 4226) — Max 32
+# ===============================================================
+
+[otp]
+issuer = GitHub
+label = developer@example.com
+# Standard RFC 4648 / Demo Base32 seed (synthetic test vector)
+secret = JBSWY3DPEHPK3PXP
+type = TOTP
+algo = SHA1
+digits = 6
+period = 30
+
+[otp]
+issuer = Cloudflare
+label = infra-admin@example.com
+# Synthetic 256-bit Base32 test seed ("12345678901234567890")
+secret = GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ
+type = TOTP
+algo = SHA256
+digits = 8
+period = 30
+
+[otp]
+issuer = AWS
+label = root-account@example.com
+# Full otpauth:// URI import example (RFC 4648 "foobar" vector)
+uri = otpauth://totp/AWS:root-account?secret=MZXW6YTBOI======&issuer=AWS&algorithm=SHA1&digits=6&period=30
+
+[otp]
+issuer = ProtonMail
+label = hardware-token@example.com
+secret = GEZDGNBVGY3TQOJQ
+type = HOTP
+algo = SHA1
+digits = 6
+counter = 0
+
+
+# ===============================================================
+# CRITICAL SECRETS COFFER (Hold-to-Reveal in RAM) — Max 32
+# ===============================================================
+# Supported categories:
+#   SSH      -> SSH fingerprints, public keys, or key passphrases
+#   GPG      -> GPG master key passphrases or key IDs
+#   SEED     -> BIP-39 recovery phrases (12 / 24 words)
+#   PASSWORD -> Critical master passwords
+#   RECOVERY -> Emergency 2FA backup codes
+# ===============================================================
+
+[secret]
+category = SSH
+title = SSH Prod Ed25519
+subtitle = SHA256:DEMO_FINGERPRINT / deploy@prod-bastion
+value = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleSyntheticPublicKeyVector00000000
+
+[secret]
+category = SEED
+title = Hardware Wallet 12w
+subtitle = Cold Storage Test Vector (BIP-39 All-Zero Entropy)
+value = abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
+
+[secret]
+category = PASSWORD
+title = Master KeePass DB
+subtitle = Offline Emergency Vault Passphrase (Synthetic)
+value = Example-Synthetic-Passphrase-Do-Not-Use-In-Prod!99
+
+[secret]
+category = RECOVERY
+title = 2FA Backup Codes
+subtitle = Synthetic Emergency Scratch Codes
+value = 0000-1111, 2222-3333, 4444-5555, 6666-7777, 8888-9999
